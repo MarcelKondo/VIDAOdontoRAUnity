@@ -6,18 +6,31 @@ public class TrackableObject : MonoBehaviour {
 
     // Marker responsible for defining the system's origin
     public Transform OriginMarker;
+    
+    public TCPConnection TCPHandler = null;
 
     // Use this for initialization
     void Start()
     {
+        if (TCPHandler != null)
+        {
 
+        }
+        else Debug.LogError(transform.name + ": No TCPConnection component found!");
     }
 
     // Update is called once per frame
     void Update()
     {
-        print("Pos: " + RelMakerPos().ToString());
-        print("Rot: " + RelMarkerRot().ToString());
+        //print("Pos: " + RelMakerPos().ToString());
+        //print("Rot: " + RelMarkerRot().ToString());
+        if(TCPHandler != null)
+        {
+            Debug.Log("SentTCP");
+
+            TCPHandler.SendTCPMessage("pos{" + RelMakerPos().ToString() + "}rot{" + RelMarkerRot().eulerAngles.ToString() + "}");
+        }
+        else Debug.LogError(transform.name + ": No TCPConnection component found!");
     }
 
 

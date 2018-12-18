@@ -1,4 +1,5 @@
-﻿
+﻿//adapted code from https://gist.github.com/danielbierwirth/0636650b005834204cb19ef5ae6ccedb
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,10 +8,10 @@ using System.Text;
 using System.Threading;
 using UnityEngine;
 
-public class TCPTestClient : MonoBehaviour
+public class TCPConnection : MonoBehaviour
 {
-    public string ip;
-    public int port;
+    public string ip = "localhost";
+    public int port = 99999;
     #region private members 	
     private TcpClient socketConnection;
     private Thread clientReceiveThread;
@@ -23,10 +24,6 @@ public class TCPTestClient : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            SendMessage();
-        }
     }
     /// <summary> 	
     /// Setup socket connection. 	
@@ -80,7 +77,7 @@ public class TCPTestClient : MonoBehaviour
     /// <summary> 	
     /// Send message to server using socket connection. 	
     /// </summary> 	
-    private void SendMessage()
+    public void SendTCPMessage(String message)
     {
         if (socketConnection == null)
         {
@@ -90,14 +87,18 @@ public class TCPTestClient : MonoBehaviour
         {
             // Get a stream object for writing. 			
             NetworkStream stream = socketConnection.GetStream();
-            if (stream.CanWrite)
+            if (/*stream.CanWrite*/ true)
             {
-                string clientMessage = "This is a message from one of your clients.";
+                string clientMessage = message;
                 // Convert string message to byte array.                 
                 byte[] clientMessageAsByteArray = Encoding.ASCII.GetBytes(clientMessage);
                 // Write byte array to socketConnection stream.                 
                 stream.Write(clientMessageAsByteArray, 0, clientMessageAsByteArray.Length);
                 Debug.Log("Client sent his message - should be received by server");
+            }
+            else
+            {
+                Debug.LogWarning("Cant write stream!");
             }
         }
         catch (SocketException socketException)
