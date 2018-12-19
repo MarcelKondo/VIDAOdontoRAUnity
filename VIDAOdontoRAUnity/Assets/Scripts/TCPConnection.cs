@@ -8,10 +8,8 @@ using System.Text;
 using System.Threading;
 using UnityEngine;
 
-public class TCPConnection : MonoBehaviour
+public class TCPConnection : USocketHandler
 {
-    public string ip = "localhost";
-    public int port = 99999;
     #region private members 	
     private TcpClient socketConnection;
     private Thread clientReceiveThread;
@@ -51,6 +49,7 @@ public class TCPConnection : MonoBehaviour
             if (ip == null) return;
             socketConnection = new TcpClient(ip, port);
             Byte[] bytes = new Byte[1024];
+            socketConnection.NoDelay = true;
             while (true)
             {
                 // Get a stream object for reading 				
@@ -77,7 +76,7 @@ public class TCPConnection : MonoBehaviour
     /// <summary> 	
     /// Send message to server using socket connection. 	
     /// </summary> 	
-    public void SendTCPMessage(String message)
+    public override void SendSMessage(String message)
     {
         if (socketConnection == null)
         {
@@ -87,18 +86,18 @@ public class TCPConnection : MonoBehaviour
         {
             // Get a stream object for writing. 			
             NetworkStream stream = socketConnection.GetStream();
-            if (/*stream.CanWrite*/ true)
+            if (stream.CanWrite)
             {
-                string clientMessage = message;
                 // Convert string message to byte array.                 
-                byte[] clientMessageAsByteArray = Encoding.ASCII.GetBytes(clientMessage);
+                byte[] clientMessageAsByteArray = EncodeMessage(message);
                 // Write byte array to socketConnection stream.                 
                 stream.Write(clientMessageAsByteArray, 0, clientMessageAsByteArray.Length);
                 Debug.Log("Client sent his message - should be received by server");
+                stream.Flush();
             }
             else
             {
-                Debug.LogWarning("Cant write stream!");
+                Debug.LogWarning("Can`t write to stream!");
             }
         }
         catch (SocketException socketException)

@@ -7,12 +7,12 @@ public class TrackableObject : MonoBehaviour {
     // Marker responsible for defining the system's origin
     public Transform OriginMarker;
     
-    public TCPConnection TCPHandler = null;
+    public USocketHandler SocketHandler = null;
 
     // Use this for initialization
     void Start()
     {
-        if (TCPHandler != null)
+        if (SocketHandler != null)
         {
 
         }
@@ -24,11 +24,11 @@ public class TrackableObject : MonoBehaviour {
     {
         //print("Pos: " + RelMakerPos().ToString());
         //print("Rot: " + RelMarkerRot().ToString());
-        if(TCPHandler != null)
+        if(SocketHandler != null)
         {
             Debug.Log("SentTCP");
 
-            TCPHandler.SendTCPMessage("pos{" + RelMakerPos().ToString() + "}rot{" + RelMarkerRot().eulerAngles.ToString() + "}");
+            SocketHandler.SendSMessage("pos{" + RelMakerPos().ToString() + "}rot{" + RelMarkerRot().eulerAngles.ToString() + "}");
         }
         else Debug.LogError(transform.name + ": No TCPConnection component found!");
     }

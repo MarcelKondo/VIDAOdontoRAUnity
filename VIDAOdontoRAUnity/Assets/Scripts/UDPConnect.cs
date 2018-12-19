@@ -21,13 +21,9 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
-public class UDPSend : MonoBehaviour
+public class UDPConnect : USocketHandler
 {
     private static int localPort;
-
-    // prefs 
-    private string IP;  // define in init
-    public int port;  // define in init
 
     // "connection" things
     IPEndPoint remoteEndPoint;
@@ -40,7 +36,7 @@ public class UDPSend : MonoBehaviour
     // call it from shell (as program)
     private static void Main()
     {
-        UDPSend sendObj = new UDPSend();
+        UDPConnect sendObj = new UDPConnect();
         sendObj.init();
 
         // testing via console
@@ -72,7 +68,7 @@ public class UDPSend : MonoBehaviour
         strMessage = GUI.TextField(new Rect(40, 420, 140, 20), strMessage);
         if (GUI.Button(new Rect(190, 420, 40, 20), "send"))
         {
-            sendString(strMessage + "\n");
+            SendSMessage(strMessage + "\n");
         }
     }
 
@@ -83,18 +79,17 @@ public class UDPSend : MonoBehaviour
         print("UDPSend.init()");
 
         // define
-        IP = "127.0.0.1";
-        port = 8051;
+        
 
         // ----------------------------
         // Senden
         // ----------------------------
-        remoteEndPoint = new IPEndPoint(IPAddress.Parse(IP), port);
+        remoteEndPoint = new IPEndPoint(IPAddress.Parse(ip), port);
         client = new UdpClient();
 
         // status
-        print("Sending to " + IP + " : " + port);
-        print("Testing: nc -lu " + IP + " : " + port);
+        print("Sending to " + ip + " : " + port);
+        print("Testing: nc -lu " + ip + " : " + port);
 
     }
 
@@ -128,15 +123,14 @@ public class UDPSend : MonoBehaviour
     }
 
     // sendData
-    private void sendString(string message)
+    public override void SendSMessage(string message)
     {
         try
         {
             //if (message != "") 
             //{
-
-            // Daten mit der UTF8-Kodierung in das Binärformat kodieren.
-            byte[] data = Encoding.UTF8.GetBytes(message);
+            
+            byte[] data = EncodeMessage(message);
 
             // Den message zum Remote-Client senden.
             client.Send(data, data.Length, remoteEndPoint);
@@ -154,7 +148,7 @@ public class UDPSend : MonoBehaviour
     {
         do
         {
-            sendString(testStr);
+            SendMessage(testStr);
 
 
         }
